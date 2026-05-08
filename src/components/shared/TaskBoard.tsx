@@ -134,7 +134,7 @@ export function TaskBoard({ projectId }: { projectId: string }) {
             {/* Rapid-Fire Creation Form */}
             <form
                 onSubmit={(e) => { e.preventDefault(); createTask.mutate({ title, projectId }); }}
-                className="mb-6 flex gap-4"
+                className="items-center mb-6 flex gap-4"
             >
                 <input
                     type="text"
@@ -144,6 +144,9 @@ export function TaskBoard({ projectId }: { projectId: string }) {
                     className="flex-1 rounded-md border p-2 text-sm"
                 />
                 <Button type="submit" disabled={!title.trim() || createTask.isPending}>Add Task</Button>
+                {createTask.error && (
+                    <p className="text-sm text-red-500">{createTask.error.data?.zodError?.fieldErrors?.title?.[0] ?? createTask.error.message}</p>
+                )}
             </form>
 
             {/* THE KANBAN BOARD */}
