@@ -1,9 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
-import { projects, workspaces, tasks } from "~/server/db/schema";
+import { projects, tasks } from "~/server/db/schema";
 import { and, eq } from "drizzle-orm";
-// 1. Import the Bouncer's internal radio (clerkClient)
-import { clerkClient } from "@clerk/nextjs/server";
 
 export const projectRouter = createTRPCRouter({
 
@@ -38,23 +36,6 @@ export const projectRouter = createTRPCRouter({
             name: z.string().min(3, "Project name must be at least 3 characters")
         }))
         .mutation(async ({ ctx, input }) => {
-
-            // THE FIX: JUST-IN-TIME (JIT) SYNC
-            // 1. Grab the Clerk Client to talk to the Bouncer's backend
-            const clerk = await clerkClient();
-
-            // 2. Ask the Bouncer for the details of the current kitchen
-            const organization = await clerk.organizations.getOrganization({
-                organizationId: ctx.workspaceId,
-            });
-
-            // 3. Tell Neon about the kitchen. 
-            // "onConflictDoNothing" is Drizzle magic: If the kitchen already exists, skip this safely!
-            await ctx.db.insert(workspaces).values({
-                id: ctx.workspaceId,
-                name: organization.name,
-            }).onConflictDoNothing();
-
             // THE ORIGINAL PROJECT INSERT
             const newId = crypto.randomUUID();
 

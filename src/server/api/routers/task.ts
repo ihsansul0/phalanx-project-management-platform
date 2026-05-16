@@ -2,7 +2,6 @@ import { z } from "zod";
 import { eq, and, sql, asc } from "drizzle-orm";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { tasks, comments, users } from "~/server/db/schema";
-import { currentUser } from "@clerk/nextjs/server";
 import { pusherServer } from "~/server/pusher";
 
 export const taskRouter = createTRPCRouter({
@@ -61,13 +60,11 @@ export const taskRouter = createTRPCRouter({
             projectId: z.string()
         }))
         .mutation(async ({ ctx, input }) => {
-            // 1. Grab the user for the live broadcast
-            const clerkUser = await currentUser();
-            if (!clerkUser) throw new Error("Unauthorized");
+            if (!ctx.userId) throw new Error("Unauthorized");
 
             const newId = crypto.randomUUID();
 
-            // 2. Insert into the database
+            // Insert into the database
             await ctx.db.insert(tasks).values({
                 id: newId,
                 title: input.title,
@@ -75,9 +72,9 @@ export const taskRouter = createTRPCRouter({
                 workspaceId: ctx.workspaceId, // Security Anchor
             });
 
-            // 3. The Live Wire Broadcast
+            // The Live Wire Broadcast
             await pusherServer.trigger(`workspace-${ctx.workspaceId}`, "board-updated", {
-                triggeredBy: clerkUser.id,
+                triggeredBy: ctx.userId,
             });
 
             return { id: newId };
@@ -90,9 +87,7 @@ export const taskRouter = createTRPCRouter({
             status: z.enum(["TODO", "IN_PROGRESS", "DONE"]),
         }))
         .mutation(async ({ ctx, input }) => {
-            // 1. Grab the user so we know who is moving the card (to prevent echoes)
-            const clerkUser = await currentUser();
-            if (!clerkUser) throw new Error("Unauthorized");
+            if (!ctx.userId) throw new Error("Unauthorized");
 
             await ctx.db.update(tasks)
                 .set({
@@ -111,7 +106,7 @@ export const taskRouter = createTRPCRouter({
             // THE LIVE WIRE: BROADCAST THE BOARD UPDATE
             // We broadcast to the entire workspace!
             await pusherServer.trigger(`workspace-${ctx.workspaceId}`, "board-updated", {
-                triggeredBy: clerkUser.id,
+                triggeredBy: ctx.userId,
             });
 
             return { success: true };
@@ -126,11 +121,9 @@ export const taskRouter = createTRPCRouter({
             dueDate: z.date().nullable().optional(),
         }))
         .mutation(async ({ ctx, input }) => {
-            // 1. Grab the user for the live broadcast
-            const clerkUser = await currentUser();
-            if (!clerkUser) throw new Error("Unauthorized");
+            if (!ctx.userId) throw new Error("Unauthorized");
 
-            // 2. Update the database
+            // Update the database
             await ctx.db.update(tasks)
                 .set({
                     title: input.title,
@@ -145,9 +138,9 @@ export const taskRouter = createTRPCRouter({
                     )
                 );
 
-            // 3. The Live Wire Broadcast
+            // The Live Wire Broadcast
             await pusherServer.trigger(`workspace-${ctx.workspaceId}`, "board-updated", {
-                triggeredBy: clerkUser.id,
+                triggeredBy: ctx.userId,
             });
 
             return { success: true };
@@ -186,21 +179,10 @@ export const taskRouter = createTRPCRouter({
             content: z.string().min(1)
         }))
         .mutation(async ({ ctx, input }) => {
-            // --- THE JIT SYNC ---
-            // 1. Fetch the user's real name and email from Clerk's servers
-            const clerkUser = await currentUser();
-            if (!clerkUser) throw new Error("Unauthorized");
-
-            // 2. Silently ensure they exist in our Neon database
-            // onConflictDoNothing() is a Drizzle superpower. If they already exist, it just skips this step!
-            await ctx.db.insert(users).values({
-                id: clerkUser.id,
-                email: clerkUser.emailAddresses[0]?.emailAddress ?? "unknown@email.com",
-                name: clerkUser.fullName ?? "Unknown User",
-            }).onConflictDoNothing();
+            if (!ctx.userId) throw new Error("Unauthorized");
 
             // --- THE ACTUAL COMMENT ---
-            // 3. Now that Neon officially knows who this user is, safely insert the comment
+            // Now that Neon officially knows who this user is (via webhook), safely insert the comment
             await ctx.db.insert(comments).values({
                 taskId: input.taskId,
                 content: input.content,
@@ -240,9 +222,7 @@ export const taskRouter = createTRPCRouter({
     delete: protectedProcedure
         .input(z.object({ taskId: z.string() }))
         .mutation(async ({ ctx, input }) => {
-            // 1. Grab the user for the live broadcast
-            const clerkUser = await currentUser();
-            if (!clerkUser) throw new Error("Unauthorized");
+            if (!ctx.userId) throw new Error("Unauthorized");
 
             // 2. Delete from the database
             await ctx.db.delete(tasks)
@@ -255,7 +235,7 @@ export const taskRouter = createTRPCRouter({
 
             // 3. The Live Wire Broadcast
             await pusherServer.trigger(`workspace-${ctx.workspaceId}`, "board-updated", {
-                triggeredBy: clerkUser.id,
+                triggeredBy: ctx.userId,
             });
 
             return { success: true };
