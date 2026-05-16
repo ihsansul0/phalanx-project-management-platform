@@ -7,7 +7,7 @@ import { DragDropContext, Droppable, Draggable, type DropResult } from "@hello-p
 import { TaskDetailPanel } from "~/components/shared/TaskDetailPanel";
 import Pusher from "pusher-js";
 import { useUser, useAuth } from "@clerk/nextjs";
-import { tasks } from "~/server/db/schema";
+import type { tasks } from "~/server/db/schema";
 import type { InferSelectModel } from "drizzle-orm";
 
 const COLUMNS = ["TODO", "IN_PROGRESS", "DONE"] as const;
