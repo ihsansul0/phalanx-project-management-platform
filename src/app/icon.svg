@@ -1,0 +1,26 @@
+<svg 
+  xmlns="http://www.w3.org/2000/svg" 
+  viewBox="0 0 24 24" 
+  fill="none" 
+  stroke-width="2.5" 
+  stroke-linecap="round" 
+  stroke-linejoin="round"
+>
+  <!-- System theme optimization overrides -->
+  <style>
+    circle, path {
+      stroke: #171717; /* Slate Black for light browser tabs */
+    }
+    @media (prefers-color-scheme: dark) {
+      circle, path {
+        stroke: #ffffff; /* White for dark browser tabs */
+      }
+    }
+  </style>
+
+  <!-- The Aspis (Shield Perimeter) -->
+  <circle cx="12" cy="12" r="8" />
+  
+  <!-- The Sarissa (Executing Pike) -->
+  <path d="M12 2v20" />
+</svg>

@@ -10,9 +10,11 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "~/components/theme-provider";
 
 export const metadata: Metadata = {
-  title: "B2B SaaS Manager",
-  description: "Multi-tenant project management powered by Next.js and Clerk",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  title: {
+    default: "Phalanx",
+    template: "Phalanx // %s",
+  },
+  description: "Orchestrate complex development cycles with zero-trust multi-tenant isolation.",
 };
 
 const geist = Geist({
