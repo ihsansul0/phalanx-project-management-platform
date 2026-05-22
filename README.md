@@ -1,119 +1,54 @@
 # Phalanx // Project Orchestration System
 
-<div align="left">
-  <sub>Built with the T3 Stack, engineered for absolute security and high-velocity synchronization.</sub>
-</div>
+Phalanx is a real-time, multi-tenant B2B SaaS project management platform built for high-velocity engineering teams. It moves beyond generic task-tracking by organizing projects into isolated, secure workspace nodes driven by an instant-sync data pipeline.
 
 ---
 
-**Phalanx** is a real-time, zero-trust multi-tenant B2B SaaS project management platform and issue tracker custom-built for high-performance engineering squads. 
+## The Core Architecture Matrix
 
-Unlike generic management platforms that burden rendering engines with extensive database joins, Phalanx utilizes a **Direct Tenant Pinning Pattern** to enforce unbreachable data boundaries right at the persistence layer, while streaming active operational telemetry via real-time WebSockets.
+Phalanx is engineered using the **T3 Stack** pattern, optimizing for absolute type-safety from the database layer all the way to the client browser viewports.
 
----
-
-## 🛠️ System Architecture & Stack
-
-Phalanx leverages a hard-wired, fully type-safe technical architecture:
-
-*   **Framework:** Next.js (App Router) execution layers.
-*   **Data Tier:** Neon Serverless PostgreSQL instances mapped through Drizzle ORM.
-*   **Authentication & Perimeter Control:** Clerk Enterprise Middleware with transactional webhook state mirroring.
-*   **Real-Time Data Matrix:** Pusher WebSocket channel synchronization.
-*   **Type Safety Pipeline:** End-to-end tRPC routing procedures.
-*   **Interface Layer:** Tailwind CSS engine running an optimized, responsive monospace terminal layout.
+| Component | Technology | Operational Role |
+| :--- | :--- | :--- |
+| **Runtime Framework** | Next.js (App Router) | Handles asymmetric server component data fetching and streaming layouts. |
+| **Communication Layer**| tRPC | Enforces compile-time, end-to-end type-safe API routing. |
+| **Database Engines** | Neon Postgres + Drizzle ORM | Serverless relational data layer managed through programmatic TypeScript schemas. |
+| **Perimeter Security** | Clerk Auth | Edge-level authentication, session tracking, and multi-tenant organization scopes. |
+| **Live Sync Network** | Pusher WebSockets | Event broadcasting grid driving real-time interface reconciliation. |
 
 ---
 
-## 🔒 Zero-Trust Multi-Tenancy (The Security Blueprint)
+## Key Engineering Pillars
 
-Phalanx is architected under strict B2B isolation requirements. Every user, workspace node, asset, and task element is securely guarded.
+### 1. Zero-Trust Multi-Tenant Isolation
+Unlike basic entry-level platforms that rely on expensive database `JOIN` queries to verify permissions, Phalanx implements an enterprise database sharding pattern. 
+* Every domain entity—including `projects`, `tasks`, and `comments`—is hard-anchored with a `workspaceId` matching the user's active Clerk Organization token.
+* All tRPC routers enforce data perimeter fencing via flat, optimized `where` clauses, preventing cross-tenant data leaks at the query layer.
 
-[ Clerk Authentication Gateway ]
-│
-▼
-[ Next.js Edge Middleware ] ──► (Validates Org Tokens)
-│
-▼
-[ tRPC Router Shield ]
-│
-▼
-┌─────────────────────────────────────────┐
-│         Drizzle ORM Engine Layer        │
-│  (Enforces direct workspaceId matching) │
-└─────────────────────────────────────────┘
-│
-┌────────┴────────┐
-▼                 ▼
-[ Tenant Alpha ]   [ Tenant Beta ]
-(Isolated Node)    (Isolated Node)
+### 2. Automated Webhook Synchronization
+User profiles and team configurations are never manually handled by vulnerable database forms. Instead, asymmetric events fired by Clerk’s infrastructure are securely captured by our background webhook routing system (`src/app/api/webhooks/clerk`), which programmatically reflects state changes into our Neon Postgres instances instantly.
 
-Rather than abstracting organization security upstream, `workspaceId` is stamped directly onto every relational data entity (`projects`, `tasks`, and `comments`). Queries filter via atomic conditions, eliminating data leakage vector risks entirely.
-
-### Core Schema Blueprint (`schema.ts`)
-
-*   **`users`**: Synced securely via incoming Clerk cryptographic webhooks.
-*   **`workspaces`**: Directly mapped to isolated Clerk Organization structures.
-*   **`projects`**: Concrete execution nodes bound to an active tenant workspace frame.
-*   **`tasks`**: Workflow entities supporting strict state machines (`TODO`, `IN_PROGRESS`, `DONE`).
-*   **`comments`**: Fully cascaded collaboration entries with dual security anchors (`userId` + `workspaceId`).
+### 3. Real-Time Collaboration Canvas
+The task board bypasses traditional "request-response" page refreshes entirely. When an operator alters a task state, client-side actions broadcast lightweight payloads over a secure WebSocket channel using Pusher. Sibling client panels capture the stream and update board cards instantly.
 
 ---
 
-## 📁 Repository Map
+## Repository Directory Blueprint
 
-saas
-├── src
-│   ├── app
-│   │   ├── (auth)            # Encrypted registration/login loops
-│   │   ├── api/webhooks      # Clerk identity sync ingestion pipeline
-│   │   ├── api/trpc          # Batch tRPC procedure endpoints
-│   │   └── dashboard         # Main responsive runtime viewports
-│   ├── components/shared     # Task boards, analytics engines, navigation rails
-│   ├── lib/utils.ts          # Core styling & system helper wrappers
-│   ├── middleware.ts         # Global edge route interception bouncer
-│   └── server
-│       ├── api/routers       # Validated CRUD transaction matrices
-│       ├── db/schema.ts      # Multi-tenant Postgres schema topologies
-│       └── pusher.ts         # Real-time WebSocket emitter pipelines
+```text
+saas/
+├── src/
+│   ├── app/                 # Next.js App Router Pages & API Webhooks
+│   │   ├── (auth)/          # Clerk Authentication Interceptors
+│   │   ├── api/webhooks/    # B2B State Synchronizer Webhooks
+│   │   └── dashboard/       # Core Operational UI Workspace Views
+│   ├── components/
+│   │   ├── shared/          # Live Taskboards, Drawers, & Forms
+│   │   └── ui/              # Primitive Tailwind Component Library
+│   ├── server/
+│   │   ├── api/routers/     # Protected tRPC Business Logic Routers
+│   │   └── db/              # Drizzle Schemas & Connection Hubs
+│   └── lib/                 # Shared Utility Functions
+├── drizzle.config.ts        # Database Migration Matrix Settings
+└── start-database.sh        # Local Docker Database Initialization
 
----
-
-## ⚡ Quickstart Infrastructure Guide
-
-### 1. Initialize Local Environment Variables
-
-Duplicate your configuration sample file or construct a `.env` block at the root directory:
-
-```env
-# Database Credentials
-DATABASE_URL="postgresql://..."
-
-# Clerk Security Perimeter Tokens
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_live_..."
-CLERK_SECRET_KEY="sk_live_..."
-CLERK_WEBHOOK_SECRET="whsec_..."
-
-# Pusher Real-Time Communication Bus
-NEXT_PUBLIC_PUSHER_APP_KEY="..."
-PUSHER_APP_ID="..."
-PUSHER_SECRET="..."
-PUSHER_CLUSTER="..."
-
-# Clean install execution
-pnpm install
-
-# Push local structural schemas to remote Postgres instances
-pnpm drizzle-kit push
-
-# Spin up local development runtime environment
-pnpm dev
-
-Your system terminal console will initialize natively on localhost:3000.
-
-🎛️ Operational Highlights
-Responsive Structural Shell: Fully responsive layouts. Sidebar configurations adapt from fixed desktop viewports into hidden mobile overlays with a touch-hold purge protection matrix.
-
-Optimized Client Fluidity: Input validation catch boundaries intercept structural inputs under 3 characters on both creation and modification operations prior to server processing, logging clean errors to console readouts.
-
-Live Node Synchronicity: KanBan updates utilize instantaneous state transforms via Pusher channels, synchronizing active dashboards across all connected team sessions without layout flashing.
