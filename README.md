@@ -48,8 +48,7 @@ phalanx/
 │   │   ├── api/routers/     # Protected tRPC Business Logic Routers
 │   │   └── db/              # Drizzle Schemas & Connection Hubs
 │   └── lib/                 # Shared Utility Functions
-├── drizzle.config.ts        # Database Migration Matrix Settings
-└── start-database.sh        # Local Docker Database Initialization
+└── drizzle.config.ts        # Database Migration Matrix Settings
 ```
 
 ---
