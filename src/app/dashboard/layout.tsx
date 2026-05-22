@@ -82,7 +82,7 @@ export default async function DashboardLayout({
             <div className="flex flex-1 flex-col h-full overflow-hidden">
 
                 {/* THE LIVE CONTEXT HEADER BAR (Adjusted padding on mobile) */}
-                <header className="flex h-14 items-center justify-between border-b border-border bg-[#050505] md:bg-background/50 backdrop-blur-md px-4 md:px-6 shrink-0 gap-4 z-40">
+                <header className="flex h-14 items-center justify-between border-b border-border bg-[#050505] md:bg-background/50 md:backdrop-blur-md px-4 md:px-6 shrink-0 gap-4 z-40">
                     {/* Reactive Multi-tier Navigation Trail */}
                     {/* Reactive Navigation Area holding Mobile Toggle and Breadcrumbs */}
                     <div className="flex items-center gap-3 min-w-0">
