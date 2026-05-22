@@ -85,6 +85,11 @@ export function TaskDetailPanel({ task, onClose }: { task: TaskProps; onClose: (
                                 className="w-full resize-none border-none bg-transparent p-0 text-lg font-bold text-foreground focus:outline-none focus:ring-0 leading-snug tracking-tight"
                                 rows={2}
                             />
+                            {updateDetails.error && (
+                                <p className="text-xs font-mono text-red-400 mt-1 mb-1">
+                                    {updateDetails.error.data?.zodError?.fieldErrors?.title?.[0] ?? updateDetails.error.message}
+                                </p>
+                            )}
                             <span className="text-[10px] font-mono text-muted-foreground block mt-1">
                                 NODE_ID: {task.id}
                             </span>

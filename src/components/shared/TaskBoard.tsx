@@ -150,6 +150,11 @@ export function TaskBoard({ projectId }: { projectId: string }) {
                     Deploy
                 </Button>
             </form>
+            {createTask.error && (
+                <p className="text-xs font-mono text-red-400 pl-3">
+                    {createTask.error.data?.zodError?.fieldErrors?.title?.[0] ?? createTask.error.message}
+                </p>
+            )}
 
             {/* THE KANBAN BOARD MATRIX */}
             <DragDropContext onDragEnd={onDragEnd}>
