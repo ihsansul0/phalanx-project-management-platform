@@ -27,7 +27,7 @@ export default async function DashboardLayout({
     return (
         <div className="flex h-screen w-screen overflow-hidden bg-background text-foreground antialiased">
 
-            {/* SIDEBAR NAVIGATION APP SHELL FRAME (Hidden on mobile viewports via hidden md:flex) */}
+            {/* SIDEBAR NAVIGATION APP SHELL FRAME (Now hidden on mobile viewports via hidden md:flex) */}
             <aside className="hidden md:flex h-full w-64 flex-col bg-[#050505] border-r border-r-border shrink-0 select-none">
                 {/* Brand Identity / Switcher Module */}
                 <div className="flex h-14 items-center justify-between border-b border-border px-4 gap-2">
@@ -42,10 +42,7 @@ export default async function DashboardLayout({
                             strokeLinecap="round"
                             strokeLinejoin="round"
                         >
-                            {/* The Aspis (Shield Perimeter) - Perfect Geometric Circle */}
                             <circle cx="12" cy="12" r="8" />
-
-                            {/* The Sarissa (Executing Pike) - Continuous Vertical Axis */}
                             <path d="M12 2v20" />
                         </svg>
                         <span className="font-mono text-xs font-black tracking-[0.2em] text-white uppercase pl-0.5">
@@ -83,7 +80,7 @@ export default async function DashboardLayout({
 
                 {/* THE LIVE CONTEXT HEADER BAR (Adjusted padding on mobile via px-4 md:px-6) */}
                 <header className="flex h-14 items-center justify-between border-b border-border bg-background/50 backdrop-blur-md px-4 md:px-6 shrink-0 gap-4">
-                    {/* Reactive Multi-tier Navigation Trail */}
+
                     {/* Reactive Navigation Area holding Mobile Toggle and Breadcrumbs */}
                     <div className="flex items-center gap-3 min-w-0">
                         <MobileMenu projects={projects} />
